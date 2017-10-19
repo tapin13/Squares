@@ -41,21 +41,28 @@ app.get('/times', function(request, response) {
 });
 
 app.get('/db', function (request, response) {
-    pool.connect(function(err, client, done) {
-        if(err) {
-               console.error(err);
-               response.send("Error: " + err);
-               return;
-           }
-       client.query('Select * from test_table', function(err, result) {
-           done();
-           if(err) {
-               console.error(err);
-               response.send("Error: " + err);
-           } else {
-               response.render('pages/db', { results: result.rows });
-           }
-       });
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.error(err);
+            response.send("Error: " + err);
+            return;
+        }
+        client.query('Select * from test_table', function (err, result) {
+            done();
+            if (err) {
+                console.error(err);
+                response.send("Error: " + err);
+            } else {
+                response.render('pages/db', {results: result.rows});
+            }
+        });
+        
+        client.query("insert int test_table ('1', " + request.headers['user-agent'] + ")", function (err, result) {
+            if (err) {
+                console.error(err);
+                response.send("Error: " + err);
+            }
+        });
     });
 });
 
