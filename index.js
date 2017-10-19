@@ -57,10 +57,13 @@ app.get('/db', function (request, response) {
             }
         });
         
-        client.query("insert int test_table ('1', " + request.headers['user-agent'] + ")", function (err, result) {
+        client.query("insert int test_table ('1', " + request.useragent + ")", function (err, result) {
             if (err) {
                 console.error(err);
                 response.send("Error: " + err);
+            } else {
+                console.error(err);
+                response.send("result: " + result);
             }
         });
     });
