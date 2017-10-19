@@ -1,5 +1,15 @@
 var pg = require('pg');
-var heroconfig =process.env.DATABASE_URL ;
+
+var heroconfig = {
+user: 'luivilngvuldrc',
+database: 'postgresql-concave-53487',
+password: '5c6cb16785f2f3f5e35bf0364249142e70ca82a475167b76632fc68d7e3204ed',
+host: 'ec2-54-243-252-91.compute-1.amazonaws.com',
+port: 5432,
+max: 10,
+idleTimeoutMillis: 30000,
+};
+
 var pool = new pg.Pool(heroconfig);
 var cool = require('cool-ascii-faces');
 var express = require('express');
