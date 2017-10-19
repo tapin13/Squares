@@ -1,4 +1,5 @@
 var pg = require('pg');
+var Pool = new pg.Pool();
 var cool = require('cool-ascii-faces');
 var express = require('express');
 var app = express();
@@ -29,7 +30,7 @@ app.get('/times', function(request, response) {
 });
 
 app.get('/db', function (request, response) {
-    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+    Pool.connect(process.env.DATABASE_URL, function(err, client, done) {
        client.query('Select * from test_table', function(err, result) {
            done();
            if(err) {
