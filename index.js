@@ -1,5 +1,6 @@
 var pg = require('pg');
-var pool = new pg.Pool();
+var heroconfig =process.env.DATABASE_URL ;
+var pool = new pg.Pool(heroconfig);
 var cool = require('cool-ascii-faces');
 var express = require('express');
 var app = express();
