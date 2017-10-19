@@ -2,7 +2,7 @@ var pg = require('pg');
 
 var heroconfig = {
 user: 'luivilngvuldrc',
-database: 'postgresql-concave-53487',
+database: 'd9tqgf60joq96g',
 password: '5c6cb16785f2f3f5e35bf0364249142e70ca82a475167b76632fc68d7e3204ed',
 host: 'ec2-54-243-252-91.compute-1.amazonaws.com',
 port: 5432,
