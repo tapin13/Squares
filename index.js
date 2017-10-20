@@ -51,9 +51,9 @@ app.get('/db', function (request, response) {
         client.query("insert into test_table values (1, '" + request.get('User-Agent') + "');", function (err, result) {
             if (err) {
                 console.error(err);
-                response.send("Error: " + err);
+                //response.send("Error: " + err);
             } else {
-                response.send('User-Agent: ' + request.get('User-Agent'));
+                //response.send('User-Agent: ' + request.get('User-Agent'));
             }
         });
         
