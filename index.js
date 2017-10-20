@@ -48,8 +48,6 @@ app.get('/db', function (request, response) {
             return;
         }
         
-        response.send('b' + Date.now());
-        
         client.query("insert into test_table values (" + (Date.now() / 1000) +  ", '" + request.get('User-Agent') + "');", function (err, result) {
             if (err) {
                 console.error(err);
