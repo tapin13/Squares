@@ -61,7 +61,7 @@ app.get('/db', function (request, response) {
         });
         
         
-        client.query("insert int test_table values (1, " + request.get('User-Agent') + ")", function (err, result) {
+        client.query("insert into test_table values (1, " + request.get('User-Agent') + ")", function (err, result) {
             if (err) {
                 console.error(err);
                 response.send("Error: " + err);
