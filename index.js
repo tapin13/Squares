@@ -23,6 +23,7 @@ wss.on('connection', (ws) => {
     wssClients[ws.id] = ws;
     
     ws.on('close', () => { 
+        delete wssClients[ws.id];
         console.log('Client disconnected');
     });
 
