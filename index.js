@@ -110,7 +110,7 @@ let click = (ws, x, y) => {
 };
 
 let sendOnlineClients = () => {
-    let onlineClients = [ 'onlineClients', Object.keys(wss.clients).length ];
+    let onlineClients = [ 'onlineClients', wss.clients.size ];
     wss.clients.forEach(function each(client) {
         if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(onlineClients));
