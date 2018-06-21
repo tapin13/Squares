@@ -6,7 +6,8 @@ const MIN_HEIGHT = 10; // px
 
 const express = require('express');
 //const path = require('path');
-const WebSocketServer = require("ws").Server;
+const WebSocket = require("ws");
+const WebSocketServer = WebSocket.Server;
 
 const PORT = process.env.PORT || 5000;
 
@@ -64,7 +65,7 @@ let sendNewSquare = () => {
     squares[squareId] = square;
     
     wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocketServer.OPEN) {
+        if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(square));
         }
     });
@@ -92,7 +93,7 @@ let click = (ws, x, y) => {
             let hit = [ 'hitSquare', squareId ];
             
             wss.clients.forEach(function each(client) {
-                if (client.readyState === WebSocketServer.OPEN) {
+                if (client.readyState === WebSocket.OPEN) {
                     client.send(JSON.stringify(hit));
                 }
             });            
