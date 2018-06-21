@@ -20,13 +20,13 @@ const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
-    sendTotalOnlineClients();
+    sendOnlineClients();
 
     ws.id = (Math.random()).toString().substring(2);
     
     ws.on('close', () => { 
         console.log('Client disconnected');
-        sendTotalOnlineClients();
+        sendOnlineClients();
     });
 
     ws.onmessage = (data) => {
