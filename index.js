@@ -64,7 +64,7 @@ let sendNewSquare = () => {
     squares[squareId] = square;
     
     wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocket.OPEN) {
+        if (client.readyState === WebSocketServer.OPEN) {
             client.send(JSON.stringify(square));
         }
     });
@@ -92,7 +92,7 @@ let click = (ws, x, y) => {
             let hit = [ 'hitSquare', squareId ];
             
             wss.clients.forEach(function each(client) {
-                if (client.readyState === WebSocket.OPEN) {
+                if (client.readyState === WebSocketServer.OPEN) {
                     client.send(JSON.stringify(hit));
                 }
             });            
