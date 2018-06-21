@@ -38,6 +38,9 @@
                     case 'hitSquare':
                         hitSquare(message[1]);
                         break;
+                    case 'onlineClients':
+                        onlineClients(message[1]);
+                        break;
                     default:
                         console.log(`Unknown message: ${message}`);
                 }
@@ -60,9 +63,13 @@
             let hitSquare = (id) => {
                 document.getElementById(id).remove();
             };
+            
+            let onlineClients = (onlineClients) => {
+                document.getElementById("onlineClients").html(onlineClients);
+            };
         </script>
     </head>
     <body>
-        <div>...</div>
+        <div>Online clients: <span id="onlineClients">0</span></div>
     </body>
 </html>

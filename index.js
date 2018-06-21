@@ -20,11 +20,13 @@ const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
+    sendTotalOnlineClients();
 
     ws.id = (Math.random()).toString().substring(2);
     
     ws.on('close', () => { 
         console.log('Client disconnected');
+        sendTotalOnlineClients();
     });
 
     ws.onmessage = (data) => {
@@ -105,4 +107,13 @@ let click = (ws, x, y) => {
             console.log(`wuuuuuu`);
         }
     }
+};
+
+let sendOnlineClients = () => {
+    let onlineClients = [ 'onlineClients', wss.clients.length ];
+    wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(onlineClients));
+        }
+    });    
 };
