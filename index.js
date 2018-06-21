@@ -71,7 +71,10 @@ let sendNewSquare = () => {
     }
 };
 
-setInterval(sendNewSquare, 10000);
+// Init squares
+for(let i = 0; i < MAX_SQUARES; i++) {
+    sendNewSquare();
+}
 
 let click = (ws, x, y) => {
     console.log(`click: ${ws.id} (${x}, ${y})`);
@@ -91,6 +94,8 @@ let click = (ws, x, y) => {
             }
             
             delete squares[squareId];
+            
+            setInterval(sendNewSquare, 1000);
             
             break;
         } else {
