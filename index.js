@@ -1,6 +1,8 @@
 "use strict";
 
 const MAX_SQUARES = 5;
+const MIN_WIDTH = 10; // px
+const MIN_HEIGHT = 10; // px
 
 const express = require('express');
 //const path = require('path');
@@ -59,11 +61,11 @@ let sendNewSquare = () => {
         , squareId
         , parseInt(Math.random() * 100 * 5) // x
         , parseInt(Math.random() * 100 * 5) // y
-        , parseInt(Math.random() * 100) // width
-        , parseInt(Math.random() * 100) // height
+        , parseInt(MIN_WIDTH + Math.random() * 100) // width
+        , parseInt(MIN_HEIGHT + Math.random() * 100) // height
     ];
     squares[squareId] = square;
-
+    
     for(let wsId in wssClients) {
         wssClients[wsId].send(JSON.stringify(square));
     }
