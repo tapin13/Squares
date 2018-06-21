@@ -16,16 +16,13 @@ const server = express()
 ;
 
 const wss = new WebSocketServer({ server });
-const wssClients = {};
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
 
     ws.id = (Math.random()).toString().substring(2);
-    wssClients[ws.id] = ws;
     
     ws.on('close', () => { 
-        delete wssClients[ws.id];
         console.log('Client disconnected');
     });
 
@@ -51,7 +48,7 @@ let messageRouter = (ws, message) => {
 let squares = {};
 
 let sendNewSquare = () => {
-    if(Object.keys(squares).length > MAX_SQUARES) {
+    if(Object.keys(squares).length >= MAX_SQUARES) {
         return false;
     }
     
@@ -66,13 +63,15 @@ let sendNewSquare = () => {
     ];
     squares[squareId] = square;
     
-    for(let wsId in wssClients) {
-        wssClients[wsId].send(JSON.stringify(square));
-    }
+    wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(square));
+        }
+    });
 };
 
 // Init squares
-for(let i = 0; i < MAX_SQUARES; i++) {
+for(let i = 0; i <= MAX_SQUARES; i++) {
     sendNewSquare();
 }
 
@@ -87,13 +86,16 @@ let click = (ws, x, y) => {
                 && y < squares[squareId][3] + squares[squareId][5]
             ) {
             console.log(`hitSquare`);
-            let hit = [ 'hitSquare', squareId ];
-            
-            for(let wsId in wssClients) {
-                wssClients[wsId].send(JSON.stringify(hit));
-            }
             
             delete squares[squareId];
+
+            let hit = [ 'hitSquare', squareId ];
+            
+            wss.clients.forEach(function each(client) {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify(hit));
+                }
+            });            
             
             setInterval(sendNewSquare, 1000);
             
