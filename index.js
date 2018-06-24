@@ -88,6 +88,7 @@ for(let i = 0; i <= MAX_SQUARES; i++) {
 
 let click = (ws, x, y) => {
     console.log(`click: ${ws.id} (${x}, ${y})`);
+    
     for(let squareId in squares) {
         //console.log(`${squares[squareId][0]} - ${squares[squareId][0]} ${squares[squareId][2]}`);
         //console.log(`${squares[squareId][1]} - ${squares[squareId][0]} ${squares[squareId][3]}`);
@@ -117,10 +118,10 @@ let click = (ws, x, y) => {
             setInterval(sendNewSquare, 1000);
             
             break;
-        } else {
-            console.log(`wuuuuuu ws.id: ${ws.id}`);
         }
     }
+    
+    console.log(`wuuuuuu ws.id: ${ws.id}`);
 };
 
 let sendOnlineClients = () => {
