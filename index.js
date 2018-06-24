@@ -1,23 +1,20 @@
 "use strict";
 
+const http = require("http");
+const WebSocket = require("ws");
+const httpServerEngine = require("./httpServerEngine.js").httpServerEngine;
+
+const PORT = process.env.PORT || 5000;
 const PING_TIMEOUT = 10000;
 const MAX_SQUARES = 5;
 const MIN_WIDTH = 10; // px
 const MIN_HEIGHT = 10; // px
 
-const express = require('express');
-//const path = require('path');
-const WebSocket = require("ws");
+const HttpServer = new http.createServer(httpServerEngine).listen(PORT);
+
 const WebSocketServer = WebSocket.Server;
 
-const PORT = process.env.PORT || 5000;
-
-const server = express()
-    .get('/', (req, res) => res.sendFile(__dirname + '/wsIndex.html'))
-    .listen(PORT, () => console.log(`Listening on ${ PORT }`))
-;
-
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ server: HttpServer });
 
 wss.on('connection', (ws) => {
     ws.id = (Math.random()).toString().substring(2);
