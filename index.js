@@ -25,6 +25,10 @@ wss.on('connection', (ws) => {
     ws.id = (Math.random()).toString().substring(2);
     ws.score = 0;
     
+    ws.on('pong', () => { 
+        console.log('Client pong: ' + ws.id);
+    });
+    
     ws.on('close', () => { 
         console.log('Client disconnected');
         sendOnlineClients();
@@ -126,6 +130,7 @@ let sendOnlineClients = () => {
 
 const pingClients = () => {
     wss.clients.forEach(client => {
+        console.log("ping ws.id: " + client.id);
         client.ping();
     });
 };
