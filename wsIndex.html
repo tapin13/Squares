@@ -10,7 +10,7 @@
             
             let HOST = location.origin.replace(/^http/, 'ws');
             let ws = new WebSocket(HOST);
-            //let el = document.getElementById('server-time');
+
             document.addEventListener("click", onClick);
 
             function onClick(data) {
@@ -24,8 +24,6 @@
                 console.log(`connected`);
             };
             
-            //ws.send(JSON.stringify());
-            
             ws.onmessage = function (event) {
                 messageRouter(JSON.parse(event.data));
             };
@@ -35,8 +33,8 @@
                     case 'newSquare':
                         newSquare(message[1], message[2], message[3], message[4], message[5]);
                         break;
-                    case 'hitSquare':
-                        hitSquare(message[1]);
+                    case 'hit':
+                        hit(message[1]);
                         break;
                     case 'onlineClients':
                         onlineClients(message[1]);
@@ -63,7 +61,7 @@
                 document.body.appendChild(square);
             };
             
-            let hitSquare = (id) => {
+            let hit = (id) => {
                 document.getElementById(id).remove();
             };
             

@@ -1,5 +1,6 @@
 "use strict";
 
+const PING_TIMEOUT = 10000;
 const MAX_SQUARES = 5;
 const MIN_WIDTH = 10; // px
 const MIN_HEIGHT = 10; // px
@@ -19,18 +20,18 @@ const server = express()
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
-    console.log('Client connected');
-    sendOnlineClients();
-
     ws.id = (Math.random()).toString().substring(2);
     ws.score = 0;
-    
+
+    console.log('Connected ws.id: ' + ws.id);
+    sendOnlineClients();
+
     ws.on('pong', () => { 
-        console.log('Client pong: ' + ws.id);
+        console.log('pong ws.id: ' + ws.id);
     });
     
     ws.on('close', () => { 
-        console.log('Client disconnected');
+        console.log('disconnected ws.id: ' + ws.id);
         sendOnlineClients();
     });
 
@@ -41,6 +42,7 @@ wss.on('connection', (ws) => {
     for(let squareId in squares) {
         ws.send(JSON.stringify(squares[squareId]));
     }
+    ws.lastMessageTime = Date.now();
 });
 
 let messageRouter = (ws, message) => {
@@ -71,9 +73,10 @@ let sendNewSquare = () => {
     ];
     squares[squareId] = square;
     
-    wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(square));
+    wss.clients.forEach(ws => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(square));
+            ws.lastMessageTime = Date.now();
         }
     });
 };
@@ -93,7 +96,7 @@ let click = (ws, x, y) => {
                 && y > squares[squareId][3]
                 && y < squares[squareId][3] + squares[squareId][5]
             ) {
-            console.log(`hitSquare`);
+            console.log(`hit ws.id: ${ws.id}`);
             
             delete squares[squareId];
 
@@ -102,11 +105,12 @@ let click = (ws, x, y) => {
             let score = [ 'score', ws.score ];
             ws.send(JSON.stringify(score));
             
-            let hit = [ 'hitSquare', squareId ];
+            let hit = [ 'hit', squareId ];
             
-            wss.clients.forEach(function each(client) {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify(hit));
+            wss.clients.forEach(ws => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify(hit));
+                    ws.lastMessageTime = Date.now();
                 }
             });            
             
@@ -114,24 +118,28 @@ let click = (ws, x, y) => {
             
             break;
         } else {
-            console.log(`wuuuuuu`);
+            console.log(`wuuuuuu ws.id: ${ws.id}`);
         }
     }
 };
 
 let sendOnlineClients = () => {
     let onlineClients = [ 'onlineClients', wss.clients.size ];
-    wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(onlineClients));
+    wss.clients.forEach(ws => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(onlineClients));
+            ws.lastMessageTime = Date.now();
         }
     });    
 };
 
 const pingClients = () => {
-    wss.clients.forEach(client => {
-        console.log("ping ws.id: " + client.id);
-        client.ping();
+    wss.clients.forEach(ws => {
+        console.log("ping ws.id: " + ws.id);
+        if(ws.lastMessageTime < (Date.now() - PING_TIMEOUT)) {
+            ws.ping();
+            ws.lastMessageTime = Date.now();
+        }
     });
 };
 
