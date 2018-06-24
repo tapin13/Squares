@@ -41,6 +41,9 @@
                     case 'onlineClients':
                         onlineClients(message[1]);
                         break;
+                    case 'score':
+                        score(message[1]);
+                        break;
                     default:
                         console.log(`Unknown message: ${message}`);
                 }
@@ -67,9 +70,13 @@
             let onlineClients = (onlineClients) => {
                 document.getElementById("onlineClients").innerHTML = onlineClients;
             };
+            
+            let score = (score) => {
+                document.getElementById("score").innerHTML = score;
+            };
         </script>
     </head>
     <body>
-        <div>Online clients: <span id="onlineClients">0</span></div>
+        <div>Online clients: <span id="onlineClients">0</span> Score: <span id="score">0</span></div>
     </body>
 </html>

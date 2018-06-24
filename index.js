@@ -23,6 +23,7 @@ wss.on('connection', (ws) => {
     sendOnlineClients();
 
     ws.id = (Math.random()).toString().substring(2);
+    ws.score = 0;
     
     ws.on('close', () => { 
         console.log('Client disconnected');
@@ -92,6 +93,11 @@ let click = (ws, x, y) => {
             
             delete squares[squareId];
 
+            ws.score += 1;
+            
+            let score = [ 'score', ws.score ];
+            ws.send(JSON.stringify(score));
+            
             let hit = [ 'hitSquare', squareId ];
             
             wss.clients.forEach(function each(client) {
