@@ -123,3 +123,11 @@ let sendOnlineClients = () => {
         }
     });    
 };
+
+const pingClients = () => {
+    wss.clients.forEach(client => {
+        client.ping();
+    });
+};
+
+const pingInterval = setInterval(pingClients, 10000);
