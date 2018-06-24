@@ -135,8 +135,8 @@ let sendOnlineClients = () => {
 
 const pingClients = () => {
     wss.clients.forEach(ws => {
-        console.log("ping ws.id: " + ws.id);
         if(ws.lastMessageTime < (Date.now() - PING_TIMEOUT)) {
+            console.log("ping ws.id: " + ws.id);
             ws.ping();
             ws.lastMessageTime = Date.now();
         }
