@@ -18,6 +18,7 @@ const wss = new WebSocketServer({ server: HttpServer });
 
 wss.on('connection', (ws) => {
     ws.id = (Math.random()).toString().substring(2);
+    ws.alive = true;
     ws.score = 0;
 
     console.log('Connected ws.id: ' + ws.id);
@@ -25,6 +26,7 @@ wss.on('connection', (ws) => {
 
     ws.on('pong', () => { 
         console.log('pong ws.id: ' + ws.id);
+        ws.alive = true;
     });
     
     ws.on('close', () => { 
@@ -42,7 +44,7 @@ wss.on('connection', (ws) => {
     ws.lastMessageTime = Date.now();
 });
 
-let messageRouter = (ws, message) => {
+const messageRouter = (ws, message) => {
     switch (message[0]) {
         case 'click':
             click(ws, message[1], message[2]);
@@ -54,7 +56,7 @@ let messageRouter = (ws, message) => {
 
 let squares = {};
 
-let sendNewSquare = () => {
+const sendNewSquare = () => {
     if(Object.keys(squares).length >= MAX_SQUARES) {
         return false;
     }
@@ -83,7 +85,7 @@ for(let i = 0; i <= MAX_SQUARES; i++) {
     sendNewSquare();
 }
 
-let click = (ws, x, y) => {
+const click = (ws, x, y) => {
     console.log(`click: ${ws.id} (${x}, ${y})`);
     
     for(let squareId in squares) {
@@ -121,7 +123,7 @@ let click = (ws, x, y) => {
     console.log(`wuuuuuu ws.id: ${ws.id}`);
 };
 
-let sendOnlineClients = () => {
+const sendOnlineClients = () => {
     let onlineClients = [ 'onlineClients', wss.clients.size ];
     wss.clients.forEach(ws => {
         if (ws.readyState === WebSocket.OPEN) {
@@ -133,9 +135,15 @@ let sendOnlineClients = () => {
 
 const pingClients = () => {
     wss.clients.forEach(ws => {
+        if(ws.alive === false) {
+            ws.terminate();
+            return;
+        }
+        
         if(ws.lastMessageTime < (Date.now() - PING_TIMEOUT)) {
             console.log("ping ws.id: " + ws.id);
             ws.ping();
+            ws.alive = false;
             ws.lastMessageTime = Date.now();
         }
     });
