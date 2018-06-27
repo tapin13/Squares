@@ -4,6 +4,14 @@ const http = require("http");
 const WebSocket = require("ws");
 const httpServerEngine = require("./httpServerEngine.js").httpServerEngine;
 
+const EVENTS ={ 
+    ONLINECLIENTS: 0
+    , SCORE: 1
+    , NEWSQUARE: 2
+    , HIT: 3
+    , CLICK: 4
+};
+
 const PORT = process.env.PORT || 5000;
 const PING_TIMEOUT = 10000;
 const MAX_SQUARES = 5;
@@ -34,19 +42,36 @@ wss.on('connection', (ws) => {
         sendOnlineClients();
     });
 
-    ws.onmessage = (data) => {
-        messageRouter(ws, JSON.parse(data.data));
+    ws.onmessage = (event) => {
+        let message = new Uint16Array(event.data.length / Uint16Array.BYTES_PER_ELEMENT);
+        
+        message = bufferToUint16Array(event.data);
+        
+        messageRouter(ws, message);
     };
 
     for(let squareId in squares) {
-        ws.send(JSON.stringify(squares[squareId]));
+        ws.send(squares[squareId]);
     }
     ws.lastMessageTime = Date.now();
 });
 
+const bufferToUint16Array = (data) => {
+    let message = new Uint16Array(data.length / Uint16Array.BYTES_PER_ELEMENT);
+    
+    let viewIndex = 0;
+    for (let bufferIndex = 0; bufferIndex < data.length; bufferIndex += message.BYTES_PER_ELEMENT) {
+        message[viewIndex] = data.readUInt16LE(bufferIndex);
+        viewIndex++;
+    }
+    
+    return message;
+};
+
 const messageRouter = (ws, message) => {
+    //console.log(message);
     switch (message[0]) {
-        case 'click':
+        case EVENTS.CLICK:
             click(ws, message[1], message[2]);
             break;
         default:
@@ -61,20 +86,20 @@ const sendNewSquare = () => {
         return false;
     }
     
-    let squareId = (Math.random()).toString().substring(2);
-    let square = [
-        'newSquare'
+    let squareId = parseInt((Math.random()).toString().substring(2, 6), 10);
+    let square = new Uint16Array([
+        EVENTS.NEWSQUARE
         , squareId
         , parseInt(Math.random() * 100 * 5) // x
         , parseInt(Math.random() * 100 * 5) // y
         , parseInt(MIN_WIDTH + Math.random() * 100) // width
         , parseInt(MIN_HEIGHT + Math.random() * 100) // height
-    ];
+    ]);
     squares[squareId] = square;
     
     wss.clients.forEach(ws => {
         if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify(square));
+            ws.send(square);
             ws.lastMessageTime = Date.now();
         }
     });
@@ -87,6 +112,8 @@ for(let i = 0; i <= MAX_SQUARES; i++) {
 
 const click = (ws, x, y) => {
     console.log(`click: ${ws.id} (${x}, ${y})`);
+    
+    let oldScore = ws.score;
     
     for(let squareId in squares) {
         //console.log(`${squares[squareId][0]} - ${squares[squareId][0]} ${squares[squareId][2]}`);
@@ -102,14 +129,13 @@ const click = (ws, x, y) => {
 
             ws.score += 1;
             
-            let score = [ 'score', ws.score ];
-            ws.send(JSON.stringify(score));
+            let score = new Uint16Array([ EVENTS.SCORE, ws.score ]);
+            ws.send(score);
             
-            let hit = [ 'hit', squareId ];
-            
+            let hit = new Uint16Array([ EVENTS.HIT, squareId ]);
             wss.clients.forEach(ws => {
                 if (ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify(hit));
+                    ws.send(hit);
                     ws.lastMessageTime = Date.now();
                 }
             });            
@@ -120,14 +146,16 @@ const click = (ws, x, y) => {
         }
     }
     
-    console.log(`wuuuuuu ws.id: ${ws.id}`);
+    if(oldScore === ws.score) {
+        console.log(`wuuuuuu ws.id: ${ws.id}`);
+    }
 };
 
 const sendOnlineClients = () => {
-    let onlineClients = [ 'onlineClients', wss.clients.size ];
+    let onlineClients = new Uint16Array([ EVENTS.ONLINECLIENTS, wss.clients.size ]);
     wss.clients.forEach(ws => {
         if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify(onlineClients));
+            ws.send(onlineClients);
             ws.lastMessageTime = Date.now();
         }
     });    

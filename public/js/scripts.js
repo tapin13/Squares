@@ -1,15 +1,26 @@
 "use strict";
 
+const EVENTS ={ 
+    ONLINECLIENTS: 0
+    , SCORE: 1
+    , NEWSQUARE: 2
+    , HIT: 3
+    , CLICK: 4
+};
+
 let HOST = location.origin.replace(/^http/, 'ws');
 let ws = new WebSocket(HOST);
+ws.binaryType = 'arraybuffer';
 
 document.addEventListener("click", onClick);
 
 function onClick(data) {
-    let click = [
-        "click", data.clientX, data.clientY
-    ];
-    ws.send(JSON.stringify(click));
+    console.log(`(${data.clientX}, ${data.clientY})`);
+    let click = new Uint16Array([
+        4, data.clientX, data.clientY
+    ]);
+    console.log(click);
+    ws.send(click);
 };
 
 ws.onopen = function () {
@@ -17,21 +28,22 @@ ws.onopen = function () {
 };
 
 ws.onmessage = function (event) {
-    messageRouter(JSON.parse(event.data));
+    console.log(event.data);
+    messageRouter(new Uint16Array(event.data));
 };
 
 let messageRouter = (message) => {
     switch (message[0]) {
-        case 'newSquare':
+        case EVENTS.NEWSQUARE:
             newSquare(message[1], message[2], message[3], message[4], message[5]);
             break;
-        case 'hit':
+        case EVENTS.HIT:
             hit(message[1]);
             break;
-        case 'onlineClients':
+        case EVENTS.ONLINECLIENTS:
             onlineClients(message[1]);
             break;
-        case 'score':
+        case EVENTS.SCORE:
             score(message[1]);
             break;
         default:
