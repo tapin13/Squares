@@ -25,7 +25,7 @@
   "keywords": [
     "node",
     "heroku",
-    "websocket"
+    "websocket",
     "binary"
   ],
   "license": "MIT"
