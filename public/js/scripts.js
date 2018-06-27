@@ -15,20 +15,20 @@ ws.binaryType = 'arraybuffer';
 document.addEventListener("click", onClick);
 
 function onClick(data) {
-    console.log(`(${data.clientX}, ${data.clientY})`);
+    //console.log(`(${data.clientX}, ${data.clientY})`);
     let click = new Uint16Array([
         4, data.clientX, data.clientY
     ]);
-    console.log(click);
+    //console.log(click);
     ws.send(click);
 };
 
 ws.onopen = function () {
-    console.log(`connected`);
+    //console.log(`connected`);
 };
 
 ws.onmessage = function (event) {
-    console.log(event.data);
+    //console.log(event.data);
     messageRouter(new Uint16Array(event.data));
 };
 
@@ -47,7 +47,7 @@ let messageRouter = (message) => {
             score(message[1]);
             break;
         default:
-            console.log(`Unknown message: ${message}`);
+            console.error(`Unknown message: ${message}`);
     }
 };
 
