@@ -10,3 +10,4 @@ $ cd Squares
 $ npm install
 $ nodejs index.js
 ```
+
