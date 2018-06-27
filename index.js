@@ -4,7 +4,7 @@ const http = require("http");
 const WebSocket = require("ws");
 const httpServerEngine = require("./httpServerEngine.js").httpServerEngine;
 
-const EVENTS ={ 
+const EVENTS = { 
     ONLINECLIENTS: 0
     , SCORE: 1
     , NEWSQUARE: 2
