@@ -1,7 +1,7 @@
 {
-  "name": "node-js-getting-started",
-  "version": "0.2.6",
-  "description": "A sample Node.js app using Express 4",
+  "name": "Squares",
+  "version": "1.0.0",
+  "description": "Works with NodeJS, WebSocket, Raw binary data buffer",
   "engines": {
     "node": "6.11.1"
   },
@@ -25,7 +25,8 @@
   "keywords": [
     "node",
     "heroku",
-    "express"
+    "websocket"
+    "binary"
   ],
   "license": "MIT"
 }
